@@ -31,7 +31,42 @@ void matrixMultiply(int N, const floatType* A, const floatType* B, floatType* C,
         }
     }
 
-    //TODO: Matrix multiplication using scalar * vector (AVX), NO THREADING
+    //TODO: Matrix multiplication using scalar * vector (AVX) WITH THREADING
+    #pragma omp parallel
+    {
+    __m256d local_c;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            __m256d c = _mm256_setzero_pd();
+            local_c = _mm256_setzero_pd();
+            #pragma omp parallel for schedule(dynamic)
+            for (int k = 0; k < N; k+=2) {
+                floatType a_left = A[i + k * N]; // load a left
+                floatType a_right = A[i + (k+1) * N]; // load a right
+                __m256d b = _mm256_load_pd((double*)&B[k + j*N]); // load b
+                __m256d b_flip = _mm256_permute_pd(b, 0b0101); // flip within lane
+                __m256d rr_ri = _mm256_mul_pd(_mm256_set1_pd(a_left.real()), b);
+                __m256d ii_ir = _mm256_mul_pd(_mm256_set1_pd(a_left.imag()), b_flip);
+                __m256d rr_minus_ii = _mm256_sub_pd(rr_ri, ii_ir);
+                __m256d ri_plus_ir = _mm256_add_pd(rr_ri, ii_ir);
+                __m256d a_left_times_b = _mm256_blend_pd(rr_minus_ii, ri_plus_ir, 0b1010);
+                rr_ri = _mm256_mul_pd(_mm256_set1_pd(a_right.real()), b);
+                ii_ir = _mm256_mul_pd(_mm256_set1_pd(a_right.imag()), b_flip);
+                rr_minus_ii = _mm256_sub_pd(rr_ri, ii_ir);
+                ri_plus_ir = _mm256_add_pd(rr_ri, ii_ir);
+                __m256d a_right_times_b = _mm256_blend_pd(rr_minus_ii, ri_plus_ir, 0b1010);
+                a_right_times_b = _mm256_permute2f128_pd(a_right_times_b, a_right_times_b, 0b01); // flip across lane
+                // c = _mm256_add_pd(c, _mm256_add_pd(a_left_times_b, a_right_times_b));
+                local_c = _mm256_add_pd(local_c, _mm256_add_pd(a_left_times_b, a_right_times_b));
+            }
+            #pragma omp critical
+            {
+                c = _mm256_add_pd(c, local_c);
+            }
+            C[i + j * N] = floatType(c[0], c[1]);
+        }
+    }
+    }
 
     // // Matrix multiplication using vector * vector (AVX)
     // for (int i = 0; i < N; i+=2) {
