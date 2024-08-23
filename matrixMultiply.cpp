@@ -31,14 +31,15 @@ void matrixMultiply(int N, const floatType* A, const floatType* B, floatType* C,
     //     }
     // }
 
-    //TODO: Matrix multiplication using scalar * vector (AVX) WITH THREADING
-    __m256d c;
-    #pragma omp parallel num_threads(omp_get_max_threads())
+    // Matrix multiplication using scalar * vector (AVX) WITH THREADING
+    // omp_set_num_threads(N * N); //TODO: Why this threading causes mem-out-of-bound error (segmentation fault)
+    omp_set_num_threads(omp_get_max_threads());
+    #pragma omp parallel
     {
-    #pragma omp parallel for schedule(dynamic)
+    #pragma omp for collapse(2) schedule(dynamic) // jobs threaded across i j
     for (int i = 0; i < N; i++) {
         for (int j = 0; j < N; j++) {
-            c = _mm256_setzero_pd();
+            __m256d c = _mm256_setzero_pd(); // c defined within loop avoiding race conditions
             for (int k = 0; k < N; k+=2) {
                 floatType a_left = A[i + k * N]; // load a left
                 floatType a_right = A[i + (k+1) * N]; // load a right
