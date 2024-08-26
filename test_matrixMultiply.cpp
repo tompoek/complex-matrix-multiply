@@ -22,7 +22,7 @@ void matrixMultiplyExpectedResult(int N, floatType* A, floatType* B, floatType* 
 
 int main() {
     
-    int N = 4;
+    int N = 6;
     floatType* A = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
     floatType* B = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
     floatType* C = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
@@ -54,6 +54,28 @@ int main() {
     A[14] = A[2] * floatType(4, 0);
     A[15] = A[3] * floatType(4, 0);
     }
+    if (N >= 6) {
+    A[16] = A[1] * floatType(5, 0);
+    A[17] = A[2] * floatType(5, 0);
+    A[18] = A[3] * floatType(5, 0);
+    A[19] = A[0] * floatType(5, 0);
+    A[20] = A[1] * floatType(6, 0);
+    A[21] = A[2] * floatType(6, 0);
+    A[22] = A[3] * floatType(6, 0);
+    A[23] = A[1] * floatType(6, 0);
+    A[24] = A[2] * floatType(7, 0);
+    A[25] = A[3] * floatType(7, 0);
+    A[26] = A[0] * floatType(7, 0);
+    A[27] = A[1] * floatType(7, 0);
+    A[28] = A[2] * floatType(8, 0);
+    A[29] = A[3] * floatType(8, 0);
+    A[30] = A[1] * floatType(8, 0);
+    A[31] = A[2] * floatType(8, 0);
+    A[32] = A[3] * floatType(9, 0);
+    A[33] = A[0] * floatType(9, 0);
+    A[34] = A[1] * floatType(9, 0);
+    A[35] = A[2] * floatType(9, 0);
+    }
     }
     // Print the matrix A
     std::cout << "Matrix A:" << std::endl;
@@ -83,6 +105,28 @@ int main() {
     B[13] = B[1] * floatType(4, 0);
     B[14] = B[2] * floatType(4, 0);
     B[15] = B[3] * floatType(4, 0);
+    }
+    if (N >= 6) {
+    B[16] = B[1] * floatType(5, 0);
+    B[17] = B[2] * floatType(5, 0);
+    B[18] = B[3] * floatType(5, 0);
+    B[19] = B[0] * floatType(5, 0);
+    B[20] = B[1] * floatType(6, 0);
+    B[21] = B[2] * floatType(6, 0);
+    B[22] = B[3] * floatType(6, 0);
+    B[23] = B[1] * floatType(6, 0);
+    B[24] = B[2] * floatType(7, 0);
+    B[25] = B[3] * floatType(7, 0);
+    B[26] = B[0] * floatType(7, 0);
+    B[27] = B[1] * floatType(7, 0);
+    B[28] = B[2] * floatType(8, 0);
+    B[29] = B[3] * floatType(8, 0);
+    B[30] = B[1] * floatType(8, 0);
+    B[31] = B[2] * floatType(8, 0);
+    B[32] = B[3] * floatType(9, 0);
+    B[33] = B[0] * floatType(9, 0);
+    B[34] = B[1] * floatType(9, 0);
+    B[35] = B[2] * floatType(9, 0);
     }
     }
     // Print the matrix B
