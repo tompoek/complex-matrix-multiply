@@ -22,7 +22,7 @@ void matrixMultiplyExpectedResult(int N, floatType* A, floatType* B, floatType* 
 
 int main() {
     
-    int N = 6;
+    int N = 8;
     floatType* A = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
     floatType* B = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
     floatType* C = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
@@ -31,10 +31,6 @@ int main() {
     memset(C_expected, 0, N * N * sizeof(floatType));
 
     // Example matrix A
-    // A[0] = floatType(1, 1);
-    // A[1] = floatType(1, -1);
-    // A[2] = floatType(-1, 1);
-    // A[3] = floatType(-1, -1);
     A[0] = floatType(0, 1);
     A[1] = floatType(2, 3);
     A[2] = floatType(4, 5);
@@ -53,7 +49,6 @@ int main() {
     A[13] = A[1] * floatType(4, 0);
     A[14] = A[2] * floatType(4, 0);
     A[15] = A[3] * floatType(4, 0);
-    }
     if (N >= 6) {
     A[16] = A[1] * floatType(5, 0);
     A[17] = A[2] * floatType(5, 0);
@@ -75,6 +70,10 @@ int main() {
     A[33] = A[0] * floatType(9, 0);
     A[34] = A[1] * floatType(9, 0);
     A[35] = A[2] * floatType(9, 0);
+    if (N >= 8) {
+    for (int i=36; i<64; i++) {A[i] = A[i-36];}
+    }
+    }
     }
     }
     // Print the matrix A
@@ -105,7 +104,6 @@ int main() {
     B[13] = B[1] * floatType(4, 0);
     B[14] = B[2] * floatType(4, 0);
     B[15] = B[3] * floatType(4, 0);
-    }
     if (N >= 6) {
     B[16] = B[1] * floatType(5, 0);
     B[17] = B[2] * floatType(5, 0);
@@ -127,6 +125,10 @@ int main() {
     B[33] = B[0] * floatType(9, 0);
     B[34] = B[1] * floatType(9, 0);
     B[35] = B[2] * floatType(9, 0);
+    if (N >= 8) {
+    for (int i=36; i<64; i++) {B[i] = B[i-36];}
+    }
+    }
     }
     }
     // Print the matrix B
