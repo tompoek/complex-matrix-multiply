@@ -1,7 +1,7 @@
 //For debugging purposes, you can disable CPU, GPU, and/or MPI sections of the code by commenting out the ENABLE_x defines
 #define ENABLE_CPU
 #define ENABLE_GPU
-// #define ENABLE_MPI
+#define ENABLE_MPI
 
 #define FLOATTYPE_COMPLEX128
 
