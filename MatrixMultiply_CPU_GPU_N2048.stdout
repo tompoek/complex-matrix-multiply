@@ -1,0 +1,9 @@
+rm -f Assignment1_GradeBot *.o
+g++ -std=c++11 -O2 -mavx -fopenmp -I/usr/include/openmpi-x86_64 -I/opt/local/stow/cuda-11.1/include  -c matrixMultiply.cpp -o matrixMultiply.o
+nvcc -O2 --gpu-architecture=sm_35 -Wno-deprecated-gpu-targets   -c matrixMultiplyGPU.cu -o matrixMultiplyGPU.o
+g++ -std=c++11 -O2 -mavx -fopenmp -I/usr/include/openmpi-x86_64 -I/opt/local/stow/cuda-11.1/include  -c matrixMultiplyMPI.cpp -o matrixMultiplyMPI.o
+g++ -std=c++11 -O2 -mavx -fopenmp -I/usr/include/openmpi-x86_64 -I/opt/local/stow/cuda-11.1/include  Assignment1_GradeBot.cpp matrixMultiply.o matrixMultiplyGPU.o matrixMultiplyMPI.o  -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lm -ldl -L/opt/local/stow/cuda-11.1/lib64 -lcudart -lcublas -L/usr/lib64/openmpi/lib -lmpi_cxx -lmpi  -o Assignment1_GradeBot
+a100-3
+Info.	N	Matrices/second (MKL)	Matrices/second (You)	You/MKL	error	Grade
+CPU[0,1|4/8](AMD EPYC 7542 32-Core Processor                )	2048	1.639	0.037	43.944	1.126e-26	2.54
+GPU[0,1|0/1](NVIDIA A100-PCIE-40GB)	2048	151.034	47.490	3.180	1.088e-26	7.00

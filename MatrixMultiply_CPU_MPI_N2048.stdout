@@ -1,0 +1,27 @@
+rm -f Assignment1_GradeBot *.o
+g++ -std=c++11 -O2 -mavx -fopenmp -I/usr/include/openmpi-x86_64 -I/opt/local/stow/cuda-11.1/include  -c matrixMultiply.cpp -o matrixMultiply.o
+nvcc -O2 --gpu-architecture=sm_35 -Wno-deprecated-gpu-targets   -c matrixMultiplyGPU.cu -o matrixMultiplyGPU.o
+g++ -std=c++11 -O2 -mavx -fopenmp -I/usr/include/openmpi-x86_64 -I/opt/local/stow/cuda-11.1/include  -c matrixMultiplyMPI.cpp -o matrixMultiplyMPI.o
+g++ -std=c++11 -O2 -mavx -fopenmp -I/usr/include/openmpi-x86_64 -I/opt/local/stow/cuda-11.1/include  Assignment1_GradeBot.cpp matrixMultiply.o matrixMultiplyGPU.o matrixMultiplyMPI.o  -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lm -ldl -L/opt/local/stow/cuda-11.1/lib64 -lcudart -lcublas -L/usr/lib64/openmpi/lib -lmpi_cxx -lmpi  -o Assignment1_GradeBot
+a100-0
+a100-1:rank1.Assignment1_GradeBot: No available port on ens224 in range [0, 0]
+a100-1:rank1.Assignment1_GradeBot: Unable to initialize sockets NIC /sys/class/net/ens224 (unit 0:0)
+a100-1:rank1.Assignment1_GradeBot: No available port on ens224 in range [0, 0]
+a100-1:rank1.Assignment1_GradeBot: Unable to initialize sockets NIC /sys/class/net/ens224 (unit 0:0)
+a100-1:rank1.Assignment1_GradeBot: No available port on ens224 in range [0, 0]
+a100-1:rank1.Assignment1_GradeBot: Unable to initialize sockets NIC /sys/class/net/ens224 (unit 0:0)
+a100-0:rank0.Assignment1_GradeBot: No available port on ens224 in range [0, 0]
+a100-0:rank0.Assignment1_GradeBot: Unable to initialize sockets NIC /sys/class/net/ens224 (unit 0:0)
+a100-0:rank0.Assignment1_GradeBot: No available port on ens224 in range [0, 0]
+a100-0:rank0.Assignment1_GradeBot: Unable to initialize sockets NIC /sys/class/net/ens224 (unit 0:0)
+a100-0:rank0.Assignment1_GradeBot: No available port on ens224 in range [0, 0]
+a100-0:rank0.Assignment1_GradeBot: Unable to initialize sockets NIC /sys/class/net/ens224 (unit 0:0)
+a100-1:rank1.Assignment1_GradeBot: No available port on ens224 in range [0, 0]
+a100-1:rank1.Assignment1_GradeBot: Unable to initialize sockets NIC /sys/class/net/ens224 (unit 0:0)
+a100-0:rank0.Assignment1_GradeBot: No available port on ens224 in range [0, 0]
+a100-0:rank0.Assignment1_GradeBot: Unable to initialize sockets NIC /sys/class/net/ens224 (unit 0:0)
+Info.	N	Matrices/second (MKL)	Matrices/second (You)	You/MKL	error	Grade
+CPU[0,2|4/8](AMD EPYC 7542 32-Core Processor                )	2048	1.568	0.043	36.289	1.126e-26	2.82
+CPU[1,2|4/8](AMD EPYC 7542 32-Core Processor                )	2048	1.589	0.040	39.284	1.126e-26	2.70
+MPI[1,2|4/8](a100-1)	2048	1.649	0.081	20.439	1.126e-26	3.23
+MPI[0,2|4/8](a100-0)	2048	1.636	0.081	20.285	1.126e-26	3.24

@@ -1,0 +1,22 @@
+a100-1:rank1: PSM3 can't open nic unit: 0 (err=23)
+a100-1:rank1: PSM3 can't open nic unit: 0 (err=23)
+a100-1:rank1: PSM3 can't open nic unit: 0 (err=23)
+a100-0:rank0: PSM3 can't open nic unit: 0 (err=23)
+a100-0:rank0: PSM3 can't open nic unit: 0 (err=23)
+a100-0:rank0: PSM3 can't open nic unit: 0 (err=23)
+a100-1:rank1: PSM3 can't open nic unit: 0 (err=23)
+--------------------------------------------------------------------------
+Open MPI failed an OFI Libfabric library call (fi_endpoint).  This is highly
+unusual; your job may behave unpredictably (and/or abort) after this.
+
+  Local host: a100-1
+  Location: mtl_ofi_component.c:513
+  Error: Invalid argument (22)
+--------------------------------------------------------------------------
+a100-0:rank0: PSM3 can't open nic unit: 0 (err=23)
+[a100-0:1665427] 1 more process has sent help message help-mtl-ofi.txt / OFI call fail
+[a100-0:1665427] Set MCA parameter "orte_base_help_aggregate" to 0 to see all help / error messages
+
+real	3m2.358s
+user	9m56.797s
+sys	0m7.009s
