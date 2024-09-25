@@ -12,7 +12,7 @@ void matrixMultiply_MPI(int N, const floatType* A, const floatType* B, floatType
     // Matrix multiplication using SIMD (AVX) with threading (OpenMP) and task-to-node distribution (MPI)
     // For task distribution, split task in the middle with #nodes = 2
     const int NperRank = N / world_size; // CONSTRAINT: N must be divisible by world_size
-    const int jStart = ((my_rank+1) /*Rank0 second half, Rank1 first half*/ % world_size) * NperRank;
+    const int jStart = ((my_rank+1) /*Node with Rank0 computes the second half, Rank1 the first half*/ % world_size) * NperRank;
     int jEnd = jStart + NperRank;
 
     omp_set_num_threads(omp_get_max_threads());
