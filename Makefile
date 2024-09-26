@@ -36,11 +36,15 @@ default : all
 # all targets depend on the helper programs (MPI DISABLED LOCALLY)
 $(TARGETS) : matrixMultiply.h matrixMultiply.o matrixMultiplyGPU.cuh matrixMultiplyGPU.o
 LIBS_Assignment1_GradeBot = -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lm -ldl -L$(CUDA_LIB) -lcudart -lcublas -L$(MPI_LIB)
+# # all targets depend on the helper programs (MPI ENABLED)
+# $(TARGETS) : matrixMultiply.h matrixMultiply.o matrixMultiplyGPU.cuh matrixMultiplyGPU.o matrixMultiplyMPI.h matrixMultiplyMPI.o
+# LIBS_Assignment1_GradeBot = -lmkl_intel_lp64 -lmkl_gnu_thread -lmkl_core -lgomp -lm -ldl -L$(CUDA_LIB) -lcudart -lcublas -L$(MPI_LIB) -lmpi_cxx -lmpi
 
 CXXFLAGS_Assignment1_GradeBot =
 
 matrixMultiply.o : matrixMultiply.h
 matrixMultiplyGPU.o : matrixMultiplyGPU.cuh
+# matrixMultiplyMPI.o : matrixMultiplyMPI.h # MPI ENABLED
 Assignment1_GradeBot.o : Assignment1_GradeBot.h
 
 
