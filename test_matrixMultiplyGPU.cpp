@@ -184,4 +184,7 @@ int main() {
     _mm_free(B);
     _mm_free(C);
     _mm_free(C_expected);
+    cudaFree(A_device);
+    cudaFree(B_device);
+    cudaFree(C_device);
 }
