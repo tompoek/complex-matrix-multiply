@@ -1,11 +1,14 @@
 #include <iostream>
-#include <chrono>
 
 //Alignment boundary for aligned mallocs (e.g. _mm_malloc). 64 bytes = cacheline
 #define ALIGN 64
 
 #include "Assignment1_GradeBot.h"
-#include "matrixMultiplyMPI.h"
+#include "matrixMultiply.h"
+#include "matrixMultiplyGPU.cuh"
+#include <cuda.h>
+#include <cuda_runtime.h>
+#include <cublas.h>
 
 void matrixMultiplyExpectedResult(int N, floatType* A, floatType* B, floatType* C) {
     for (int i = 0; i < N; ++i) {
@@ -21,20 +24,19 @@ void matrixMultiplyExpectedResult(int N, floatType* A, floatType* B, floatType* 
     }
 }
 
-int main(int flagCount, char **argv) {
-    MPI_Init(&flagCount, &argv);
-    
-    int world_size;
-    MPI_Comm_size(MPI_COMM_WORLD, &world_size);
-    int my_rank;
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+int main() {
     
     int N = 8;
-    
     floatType* A = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
     floatType* B = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
     floatType* C = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
-    // memset(C, 0, N * N * sizeof(floatType));
+    floatTypeCUDA* A_device;
+    floatTypeCUDA* B_device;
+    floatTypeCUDA* C_device;
+    cudaMalloc(&A_device, N*N*sizeof(*A_device));
+    cudaMalloc(&B_device, N*N*sizeof(*B_device));
+    cudaMalloc(&C_device, N*N*sizeof(*C_device));
+    memset(C, 0, N * N * sizeof(floatType));
     floatType* C_expected = (floatType*)_mm_malloc(N*N*sizeof(floatType), ALIGN);
     memset(C_expected, 0, N * N * sizeof(floatType));
 
@@ -84,16 +86,14 @@ int main(int flagCount, char **argv) {
     }
     }
     }
-    // if (my_rank == 0) {
-    // // Print the matrix A
-    // std::cout << "Matrix A:" << std::endl;
-    // for (int i = 0; i < N; ++i) {
-    //     for (int j = 0; j < N; ++j) {
-    //         std::cout << A[i + j * N] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-    // }
+    // Print the matrix A
+    std::cout << "Matrix A:" << std::endl;
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            std::cout << A[i + j * N] << " ";
+        }
+        std::cout << std::endl;
+    }
 
     // Example matrix B
     B[0] = floatType(7, 6);
@@ -141,52 +141,47 @@ int main(int flagCount, char **argv) {
     }
     }
     }
-    // if (my_rank == 0) {
-    // // Print the matrix B
-    // std::cout << "Matrix B:" << std::endl;
-    // for (int i = 0; i < N; ++i) {
-    //     for (int j = 0; j < N; ++j) {
-    //         std::cout << B[i + j * N] << " ";
-    //     }
-    //     std::cout << std::endl;
-    // }
-    // }
+    // Print the matrix B
+    std::cout << "Matrix B:" << std::endl;
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
+            std::cout << B[i + j * N] << " ";
+        }
+        std::cout << std::endl;
+    }
 
     int* args = 0;
     int argCount = 0;
-    auto start = std::chrono::high_resolution_clock::now();
-    matrixMultiply_MPI(N, A, B, C, args, argCount);
-    std::chrono::duration<double, std::milli> duration_us = std::chrono::high_resolution_clock::now() - start;
-    printf("Node %d: TIME ELAPSED to call matrixMultiply_MPI: %g ms\n", my_rank, duration_us.count());
+    // Copy matrices from host to device
+    cudaMemcpy(A_device, A, N*N*sizeof(*A_device), cudaMemcpyHostToDevice);
+    cudaMemcpy(B_device, B, N*N*sizeof(*B_device), cudaMemcpyHostToDevice);
+    cudaMemcpy(C_device, C, N*N*sizeof(*C_device), cudaMemcpyHostToDevice);
+    matrixMultiply_GPU(N, A_device, B_device, C_device, args, argCount);
+    // Copy result matrix C from device back to host
+    cudaMemcpy(C, C_device, N*N*sizeof(*C_device), cudaMemcpyDeviceToHost);
 
-    if (my_rank == 1) { // Change the rank no. to debug results for each node
     // Print the result matrix C
-    std::cout << "Node " << my_rank << " says: Matrix C = " << std::endl;
+    std::cout << "Matrix C:" << std::endl;
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j) {
             std::cout << C[i + j * N] << " ";
         }
         std::cout << std::endl;
     }
-    }
 
-    if (my_rank == 1) {
     // Perform matrix multiplication and store to C_expected
     matrixMultiplyExpectedResult(N, A, B, C_expected);
     // Print the matrix C_expected
-    std::cout << "Matrix C_expected = " << std::endl;
+    std::cout << "Matrix C_expected:" << std::endl;
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j) {
             std::cout << C_expected[i + j * N] << " ";
         }
         std::cout << std::endl;
     }
-    }
 
     _mm_free(A);
     _mm_free(B);
     _mm_free(C);
     _mm_free(C_expected);
-    
-    MPI_Finalize();
 }

@@ -14,7 +14,7 @@ void matrixMultiplyExpectedResult(int N, floatType* A, floatType* B, floatType* 
                 double imag = A[i + k * N].real() * B[k + j * N].imag() + A[i + k * N].imag() * B[k + j * N].real();
                 floatType complex(real, imag);
                 C[i + j * N] += complex;
-                // C[i + j * N] += A[i + k * N] * B[k + j * N]; // equivalent operation
+                // C[i + j * N] += A[i + k * N] * B[k + j * N]; // equivalent operation without splitting real/imag parts
             }
         }
     }
